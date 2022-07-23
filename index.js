@@ -2,8 +2,8 @@ const axios = require('axios');
 const webdriver = require("selenium-webdriver");
 const { Builder, By } = webdriver;
 
-require("chromedriver");
-chrome = require('selenium-webdriver/chrome');
+// require("chromedriver");
+const chrome = require('selenium-webdriver/chrome');
 
 var config = {
   method: 'post',
@@ -24,11 +24,6 @@ let ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 let dynamoExperiencesParams = {
     TableName: 'accor-experiences',
-    // Item: {
-    //     'link': {S: ''},
-    //     'name': {S: ''},
-    //     'price': {N: ''}
-    // }
 }
 
 let dynamoExperiencesChatsParams = {
@@ -75,6 +70,27 @@ exports.handler = async (event) => {
     let resultLink = new Set();
 
 
+    // var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
+    
+    // var params = {
+    // };
+    
+    // console.log('oi')
+    // // Call EC2 to retrieve policy for selected bucket
+    // await ec2.describeInstances(params, function(err, data) {
+    //     console.log("\nIn describe instances:\n");  
+    //   if (err) {
+    //     console.log("Error", err.stack);
+    //   } else {
+    //     console.log("Success", JSON.stringify(data));
+    //   }
+    // });
+    
+    // await new Promise(r => setTimeout(r, 1000));
+
+    // console.log("Fim");
+    // return;
+
     if (event.hasOwnProperty("source") && event.source === 'aws.events')  {
     
         const testGridUrlResult = await devicefarm.createTestGridUrl({
@@ -83,27 +99,27 @@ exports.handler = async (event) => {
         }).promise();
     
         let chromeOptions = new chrome.Options()
-                .headless()
+                // .headless()
                 .windowSize({ width: 1986, height: 1392 })
                 .excludeSwitches('enable-logging')
                 .addArguments("--incognito")
-                .addArguments("--disable-dev-shm-usage")
-                .addArguments("--no-sandbox")
-                .addArguments("--remote-debugging-port=9222")
+                // .addArguments("se:recordVideo=true")
+                // .addArguments("--disable-dev-shm-usage")
+                // .addArguments("--no-sandbox")
+                // .addArguments("--remote-debugging-port=9222")
                 .addArguments("--disable-gpu")
-                .addArguments("--disable-dev-tools");
+                // .addArguments("--disable-dev-tools");
+    
 
         let driver = await new Builder()
-            .usingServer(testGridUrlResult.url)
-            .withCapabilities(chromeOptions.toCapabilities())
-            // .setChromeOptions(new chrome.Options()
-            //     .headless()
-            //     .windowSize({ width: 1986, height: 1392 })
-            //     .excludeSwitches('enable-logging')
-            //     .addArguments("--incognito")
-            // )
+            // .usingServer(testGridUrlResult.url)
+            // .usingServer('http://44.209.205.170:4444')
+            // .usingServer('https://dfb4-179-126-205-232.sa.ngrok.io')
+            .setChromeOptions(chromeOptions)
+            .withCapabilities(webdriver.Capabilities.chrome())
             .build();
         
+        driver.sleep(5000)
         driver.manage().window().setRect({width: 1986, height: 1392});
     
         let firstTime = true;
@@ -125,47 +141,67 @@ exports.handler = async (event) => {
                       return readyState === 'complete';
                     });
                 });
-                await driver.findElement(By.xpath("//button[@id=\'switcher-delivery-country-trigger-nav\']/span")).click();
-                let delivery = await driver.findElement(By.xpath('//*[@id="switcher-delivery-country-trigger-nav"]/span')).getAttribute('class');
-                if (delivery != 'view-BR') {
-                    await driver.findElement(By.xpath("//a[contains(text(),\'Br\')]")).click()
-                    driver.wait(function() {
-                        return driver.executeScript('return document.readyState').then(function(readyState) {
-                          return readyState === 'complete';
-                        });
-                    });
-                }
-                await driver.findElement(By.xpath("//button[@id='switcher-store-trigger-language']/span")).click();
-                await driver.findElement(By.css("#dropdown-language .view-accor_pt_br .lang-name")).click();
-                driver.wait(function() {
-                    return driver.executeScript('return document.readyState').then(function(readyState) {
-                      return readyState === 'complete';
-                    });
-                });
-                await driver.findElement(By.css("#switcher-store-trigger > span")).click();
-                await driver.findElement(By.xpath("//a[contains(text(),'América do Sul')]")).click();
-                driver.wait(function() {
-                    return driver.executeScript('return document.readyState').then(function(readyState) {
-                      return readyState === 'complete';
-                    });
-                });
-                await driver.findElement(By.css("#switcher-store-trigger-language > span")).click();
-                await driver.findElement(By.xpath("//span[contains(.,'Portuguese (Brazilian)')]")).click();
-                driver.wait(function() {
-                    return driver.executeScript('return document.readyState').then(function(readyState) {
-                      return readyState === 'complete';
-                    });
-                });
-                await driver.get(urlFinal);
-                driver.wait(function() {
-                    return driver.executeScript('return document.readyState').then(function(readyState) {
-                      return readyState === 'complete';
-                    });
-                });
-                
                 firstTime = false;
             }
-    
+            await new Promise(r => setTimeout(r, 1000));
+            await driver.findElement(By.xpath("//button[@id=\'switcher-delivery-country-trigger-nav\']/span")).click();
+            await new Promise(r => setTimeout(r, 1000));
+            let delivery = await driver.findElement(By.xpath('//*[@id="switcher-delivery-country-trigger-nav"]/span')).getAttribute('class');
+            if (delivery != 'view-BR') {
+                await driver.findElement(By.xpath("//a[contains(text(),\'Br\')]")).click()
+                driver.wait(function() {
+                    return driver.executeScript('return document.readyState').then(function(readyState) {
+                      return readyState === 'complete';
+                    });
+                });
+            }
+            await new Promise(r => setTimeout(r, 1000));
+            await driver.findElement(By.xpath("//button[@id='switcher-store-trigger-language']/span")).click();
+            await new Promise(r => setTimeout(r, 1000));
+            try {
+                await driver.findElement(By.css("#dropdown-language .view-accor_pt_br .lang-name")).click();
+            } catch (e) {
+                console.log("Provavelmente já está em Portugues, seguindo o fluxo.")
+            }
+            
+            driver.wait(function() {
+                return driver.executeScript('return document.readyState').then(function(readyState) {
+                  return readyState === 'complete';
+                });
+            });
+            await new Promise(r => setTimeout(r, 1000));
+            await driver.findElement(By.css("#switcher-store-trigger > span")).click();
+            await new Promise(r => setTimeout(r, 1000));
+            
+            try {
+                await driver.findElement(By.xpath("//a[contains(text(),'América do Sul')]")).click();
+            } catch (e) {
+                console.log("Provavelmente já está na America do Sul, seguindo o fluxo.")
+
+            }
+            driver.wait(function() {
+                return driver.executeScript('return document.readyState').then(function(readyState) {
+                  return readyState === 'complete';
+                });
+            });
+            await new Promise(r => setTimeout(r, 1000));
+            await driver.findElement(By.css("#switcher-store-trigger-language > span")).click();
+            await new Promise(r => setTimeout(r, 1000));
+            await driver.findElement(By.xpath("//span[contains(.,'Portuguese (Brazilian)')]")).click();
+            driver.wait(function() {
+                return driver.executeScript('return document.readyState').then(function(readyState) {
+                  return readyState === 'complete';
+                });
+            });
+        
+            await driver.get(urlFinal);
+            driver.wait(function() {
+                return driver.executeScript('return document.readyState').then(function(readyState) {
+                  return readyState === 'complete';
+                });
+            });
+                
+          
             await driver.executeScript(function() {
                 class ExperienceAccor {
                     constructor(name, link, price) {
@@ -304,12 +340,12 @@ exports.handler = async (event) => {
         await sendMessage(event.message.chat.id, 'Se você gostou do bot, te convido a \u{1F4B0} <b>contribuir com os custos</b> \u{1F4B8} de manutenção do projeto. Caso se sinta à vontade, deixarei abaixo minha chave aleatória Pix:');
         await sendMessage(event.message.chat.id, '83fa7c98-7eae-4cb6-a15e-bbcdd8fa3792');
         await sendMessage(event.message.chat.id, 'Obrigado! \u{1F64F}'); 
-    } else if (event.message.text === '/informacao') {
+    } else if (event.message.text === '/xxx') {
         let chats = await searchAllDataExperiencesChats();
         
         let promiseResponses = [];
         for (let chatId of chats) {
-            await sendMessage(chatId, 'Olá Pessoal, passando primeiramente para agradecer aos doadores do último mês, graças a eles foi possível manter nosso Bot funcionando nos últimos dias. São eles:\n\n\u{2764} Jair\n\u{2764} Denis\n\u{2764} Lais\n\u{2764} José\n\u{2764} Fábio\n\u{2764} Carla\n\nNosso bot custa em torno de R$ 350,00 por mês. Está acima da expectativa e por isso durante essa semana ele vai ter uma frequência de verificação de 20min ao invés de 5min. Utilizarei essa semana para melhorar a performance de custos e voltar para a frequência de 5min.\n\nFico feliz em saber que já tiveram resgates graças ao BOT.\n\nAproveito o espaço para dizer que sou Arquiteto de Software e Desenvolvedor, trabalho no ramo a vários anos, estou aberto para projetos freelance de quaisquer tamanhos, pode me chamar no Telegram @soterocra ou no Linkedin: https://www.linkedin.com/in/soterocra/');
+            await sendMessage(chatId, 'Bom dia, desculpe pelas várias mensagens repetidas agora pela manhã. Problema corrigido!');
         }
     } else {
         await sendMessage(event.message.chat.id, 'Ainda não sei responder esse tipo de mensagem, me desculpe! \u{1F605}');
@@ -431,7 +467,7 @@ let insertDataExperiencesChat = async (chatId, username, firstName, last) => {
       if (err) {
         console.log("Error", err);
       } else {
-        console.log("Success", data);
+        console.log("Success", JSON.stringify(data));
       }
     });
 }
