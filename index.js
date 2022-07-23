@@ -16,7 +16,7 @@ exports.handler = async (event) => {
     } else if (event.message.text === '/start') {
         await welcomeIntention.welcomeMessage(event);
     } else if (event.message.text === '/buscar') {
-        await searchIntention.search();
+        await searchIntention.search(event);
     } else if (event.message.text === '/doar') {
         await donateIntention.donateMessage(event);
     } else if (admInfoIntention.admValidate(event.message.text)) {
