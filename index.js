@@ -1,8 +1,9 @@
 const axios = require('axios');
 const webdriver = require("selenium-webdriver");
+const AWS = require('aws-sdk');
 const { Builder, By } = webdriver;
 
-// require("chromedriver");
+
 const chrome = require('selenium-webdriver/chrome');
 
 var config = {
@@ -14,12 +15,9 @@ var config = {
   data : {}
 };
 
-const AWS = require('aws-sdk');
+
 AWS.config.update({region: 'us-east-1'})
 
-const deviceFarmArn = 'arn:aws:devicefarm:us-west-2:315904066994:testgrid-project:88dad987-e450-4f34-a4ac-9affcb426571';
-
-let devicefarm = new AWS.DeviceFarm({ region: "us-west-2" });
 let ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 let dynamoExperiencesParams = {
@@ -93,27 +91,14 @@ exports.handler = async (event) => {
 
     if (event.hasOwnProperty("source") && event.source === 'aws.events')  {
     
-        const testGridUrlResult = await devicefarm.createTestGridUrl({
-            projectArn: deviceFarmArn,
-            expiresInSeconds: 300
-        }).promise();
-    
         let chromeOptions = new chrome.Options()
-                // .headless()
                 .windowSize({ width: 1986, height: 1392 })
                 .excludeSwitches('enable-logging')
                 .addArguments("--incognito")
-                // .addArguments("se:recordVideo=true")
-                // .addArguments("--disable-dev-shm-usage")
-                // .addArguments("--no-sandbox")
-                // .addArguments("--remote-debugging-port=9222")
                 .addArguments("--disable-gpu")
-                // .addArguments("--disable-dev-tools");
     
 
         let driver = await new Builder()
-            // .usingServer(testGridUrlResult.url)
-            // .usingServer('http://44.209.205.170:4444')
             // .usingServer('https://dfb4-179-126-205-232.sa.ngrok.io')
             .setChromeOptions(chromeOptions)
             .withCapabilities(webdriver.Capabilities.chrome())
