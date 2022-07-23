@@ -12,6 +12,13 @@ const dynamoExperiencesChatsParams = {
     TableName: 'accor-experiences-chats-dev',
 }
 
+class ExperienceAccor {
+    constructor(name, link, price) {
+        this.name = name;
+        this.link = link;
+        this.price = price;
+    }
+}
 
 exports.searchAllDataExperiences = async () => {
     const tabletResult = [];
