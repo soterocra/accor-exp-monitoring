@@ -1,4 +1,5 @@
 const scraper = require('./accorscraping');
+const telegram = require('./telegram');
 const welcomeIntention = require('./welcomeintention');
 const searchIntention = require('./searchintention');
 const donateIntention = require('./donateintention');
@@ -21,7 +22,7 @@ exports.handler = async (event) => {
     } else if (admInfoIntention.admValidate(event.message.text)) {
         await admInfoIntention.admInfo(event.message.text)
     } else {
-        await sendMessage(event.message.chat.id, 'Ainda não sei responder esse tipo de mensagem, me desculpe! \u{1F605}');
+        await telegram.sendMessage(event.message.chat.id, 'Ainda não sei responder esse tipo de mensagem, me desculpe! \u{1F605}');
     }
 
     const response = {
