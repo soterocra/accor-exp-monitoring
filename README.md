@@ -1,11 +1,7 @@
-# create new file at:
-/var/lib/cloud/scripts/per-boot/
 
-executing command of the last step (Execute Selenium).
 
 # Enter /tmp directory
-cd /tmp/
-
+cd /home/ec2-user/
 # Install Java 11:
 sudo amazon-linux-extras install java-openjdk11 -y
 
@@ -24,3 +20,12 @@ wget "https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.3.0/se
 
 # Execute Selenium
 nohup java -jar selenium-grid.jar standalone --session-timeout 60 > selenium.log 2>&1 &
+
+# create new file at:
+sudo echo "nohup java -jar selenium-grid.jar standalone --session-timeout 60 > selenium.log 2>&1 &" > /var/lib/cloud/scripts/per-boot/script.sh
+
+
+
+sudo chmod 744 /var/lib/cloud/scripts/per-boot/script.sh
+
+executing command of the last step (Execute Selenium).
