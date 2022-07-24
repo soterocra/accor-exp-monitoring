@@ -43,6 +43,7 @@ exports.scrapeExperiences = async () => {
     let resultLink = new Set();
 
     let chromeOptions = new chrome.Options()
+        .headless()
         .windowSize({ width: 1986, height: 1392 })
         .excludeSwitches('enable-logging')
         // .addArguments("--incognito")
