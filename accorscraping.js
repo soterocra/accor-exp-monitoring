@@ -45,98 +45,27 @@ exports.scrapeExperiences = async () => {
     let chromeOptions = new chrome.Options()
         .windowSize({ width: 1986, height: 1392 })
         .excludeSwitches('enable-logging')
-        .addArguments("--incognito")
+        // .addArguments("--incognito")
         .addArguments("--disable-gpu")
 
 
     let driver = await new Builder()
-        // .usingServer('https://dfb4-179-126-205-232.sa.ngrok.io')
+        .usingServer('https://3d12-179-104-41-108.sa.ngrok.io')
         .setChromeOptions(chromeOptions)
         .withCapabilities(webdriver.Capabilities.chrome())
         .build();
 
-    driver.sleep(5000)
-    driver.manage().window().setRect({ width: 1986, height: 1392 });
 
-    let firstTime = true;
+    //open site to set some configs
+    await openSite(driver, url);
+    await acceptSiteCookies(driver);
+    await setSiteConfigs(driver);
 
     for (let variation of variations) {
 
         const urlFinal = url + variation.variationUrl + urlParams;
-        await driver.get(urlFinal);
-        driver.wait(function () {
-            return driver.executeScript('return document.readyState').then(function (readyState) {
-                return readyState === 'complete';
-            });
-        });
 
-        if (firstTime) {
-            await driver.findElement(By.xpath("//*[@id='accept-cookie']")).click()
-            driver.wait(function () {
-                return driver.executeScript('return document.readyState').then(function (readyState) {
-                    return readyState === 'complete';
-                });
-            });
-            firstTime = false;
-        }
-        await new Promise(r => setTimeout(r, 1000));
-        await driver.findElement(By.xpath("//button[@id=\'switcher-delivery-country-trigger-nav\']/span")).click();
-        await new Promise(r => setTimeout(r, 1000));
-        let delivery = await driver.findElement(By.xpath('//*[@id="switcher-delivery-country-trigger-nav"]/span')).getAttribute('class');
-        if (delivery != 'view-BR') {
-            await driver.findElement(By.xpath("//a[contains(text(),\'Br\')]")).click()
-            driver.wait(function () {
-                return driver.executeScript('return document.readyState').then(function (readyState) {
-                    return readyState === 'complete';
-                });
-            });
-        }
-        await new Promise(r => setTimeout(r, 1000));
-        await driver.findElement(By.xpath("//button[@id='switcher-store-trigger-language']/span")).click();
-        await new Promise(r => setTimeout(r, 1000));
-        try {
-            await driver.findElement(By.css("#dropdown-language .view-accor_pt_br .lang-name")).click();
-        } catch (e) {
-            console.log("Provavelmente já está em Portugues, seguindo o fluxo.")
-        }
-
-        driver.wait(function () {
-            return driver.executeScript('return document.readyState').then(function (readyState) {
-                return readyState === 'complete';
-            });
-        });
-        await new Promise(r => setTimeout(r, 1000));
-        await driver.findElement(By.css("#switcher-store-trigger > span")).click();
-        await new Promise(r => setTimeout(r, 1000));
-
-        try {
-            await driver.findElement(By.xpath("//a[contains(text(),'América do Sul')]")).click();
-        } catch (e) {
-            console.log("Provavelmente já está na America do Sul, seguindo o fluxo.")
-
-        }
-        driver.wait(function () {
-            return driver.executeScript('return document.readyState').then(function (readyState) {
-                return readyState === 'complete';
-            });
-        });
-        await new Promise(r => setTimeout(r, 1000));
-        await driver.findElement(By.css("#switcher-store-trigger-language > span")).click();
-        await new Promise(r => setTimeout(r, 1000));
-        await driver.findElement(By.xpath("//span[contains(.,'Portuguese (Brazilian)')]")).click();
-        driver.wait(function () {
-            return driver.executeScript('return document.readyState').then(function (readyState) {
-                return readyState === 'complete';
-            });
-        });
-
-        await driver.get(urlFinal);
-        driver.wait(function () {
-            return driver.executeScript('return document.readyState').then(function (readyState) {
-                return readyState === 'complete';
-            });
-        });
-
+        await openSite(driver, urlFinal);
 
         await driver.executeScript(function () {
             class ExperienceAccor {
@@ -162,6 +91,9 @@ exports.scrapeExperiences = async () => {
 
             return experiences;
         }).then(function (returnedValue) {
+            console.log("Resultado da variação:")
+            console.log(JSON.stringify(variation));
+            console.log(JSON.stringify(returnedValue));
             returnedValue.forEach(v => resultTmp.add(v));
             returnedValue.forEach(v => resultLink.add(v.link));
         });
@@ -234,4 +166,139 @@ exports.scrapeExperiences = async () => {
 
     }
     await Promise.all(promiseResponses);
+}
+
+let setSiteConfigs = async (driver) => {
+    await setDeliveryToFrance(driver);
+    await setDeliveryToBrazil(driver);
+    await setSitePortugueseMethod(driver);
+    await setSiteLatinAmerica(driver);
+    await setDeliveryToBrazil(driver);
+    await setSitePortugueseMethod(driver);
+    await setSiteLatinAmerica(driver);
+}
+
+let openSite = async (driver, url) => {
+    await driver.get(url);
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+}
+
+let acceptSiteCookies = async (driver) => {
+    await driver.findElement(By.xpath("//*[@id='accept-cookie']")).click()
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+}
+
+let setEventLocationBrazil = async (driver, url) => {
+    
+    try {
+        await driver.findElement(By.xpath("//a[@href='" + url + "']")).click()
+    } catch (e) {
+        console.log("Ou já está no Brazil ou não há eventos no Brazil para essa categoria.")
+    }
+        
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+
+}
+
+let setDeliveryToBrazil = async (driver) => {
+    await driver.findElement(By.xpath("//button[@id=\'switcher-delivery-country-trigger-nav\']/span")).click();
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.xpath("//a[contains(text(),\'Br\')]")).click()
+    } catch (e) {
+        console.log("Provavelmente já está no Brazil, seguindo o fluxo.")
+    }
+        
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+}
+
+let setDeliveryToFrance = async (driver) => {
+    await driver.findElement(By.xpath("//button[@id=\'switcher-delivery-country-trigger-nav\']/span")).click();
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.xpath("//a[contains(text(),\'Fra\')]")).click()
+    } catch (e) {
+        console.log("Provavelmente já está na Franca, seguindo o fluxo.")
+    }
+        
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+}
+
+let setSitePortugueseMethod = async (driver) => {
+    await driver.findElement(By.xpath("//button[@id='switcher-store-trigger-language']/span")).click();
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.css("#dropdown-language .view-accor_pt_br .lang-name")).click();
+    } catch (e) {
+        console.log("Provavelmente já está em Portugues (metodo 1). Vamos tentar o segundo metodo.")
+    }
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.xpath("//span[contains(.,'Portuguese (Brazilian)')]")).click();
+    } catch (e) {
+        console.log("Provavelmente já está em Portugues (metodo 2), seguindo o fluxo.")
+    }
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+}
+
+let setSiteLatinAmerica = async (driver) => {
+    await driver.findElement(By.css("#switcher-store-trigger > span")).click();
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.xpath("//a[contains(text(),'América do Sul')]")).click();
+    } catch (e) {
+        console.log("Provavelmente já está na America do Sul, seguindo o fluxo.")
+    }
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+        await driver.findElement(By.xpath("//a[contains(text(),'South America')]")).click();
+    } catch (e) {
+        console.log("Provavelmente já está na America do Sul, seguindo o fluxo.")
+    }
+    driver.wait(function () {
+        return driver.executeScript('return document.readyState').then(function (readyState) {
+            return readyState === 'complete';
+        });
+    });
+    await new Promise(r => setTimeout(r, 2000));
 }
