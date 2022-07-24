@@ -51,7 +51,7 @@ exports.scrapeExperiences = async () => {
 
 
     let driver = await new Builder()
-        .usingServer('https://3d12-179-104-41-108.sa.ngrok.io')
+        // .usingServer('https://3d12-179-104-41-108.sa.ngrok.io')
         .setChromeOptions(chromeOptions)
         .withCapabilities(webdriver.Capabilities.chrome())
         .build();
