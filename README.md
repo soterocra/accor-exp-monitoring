@@ -1,3 +1,8 @@
+# create new file at:
+/var/lib/cloud/scripts/per-boot/
+
+executing command of the last step (Execute Selenium).
+
 # Enter /tmp directory
 cd /tmp/
 
