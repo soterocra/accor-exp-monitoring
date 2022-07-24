@@ -9,7 +9,7 @@ exports.admInfo = async (text) => {
     let chats = await repository.searchAllDataExperiencesChats();
 
     for (let chatId of chats) {
-        await sendMessage(chatId, event.message.text.replace(admPassword, ''));
+        await telegram.sendMessage(chatId, text.replace(admPassword, ''));
     }
 }
 
