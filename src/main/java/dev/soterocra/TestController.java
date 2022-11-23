@@ -1,6 +1,8 @@
 package dev.soterocra;
 
-import dev.soterocra.entity.ItemEntity;
+import dev.soterocra.model.Item;
+import dev.soterocra.model.Result;
+import dev.soterocra.service.CompareService;
 import dev.soterocra.service.ItemService;
 import dev.soterocra.service.ScraperService;
 
@@ -11,7 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Path("/accor-exp")
 public class TestController {
@@ -22,11 +23,14 @@ public class TestController {
     @Inject
     ItemService itemService;
 
+    @Inject
+    CompareService compareService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map<String, String>> execute() throws IOException {
+    public List<Item> execute() throws IOException {
 
-        List<Map<String, String>> itens = scraperService.execute();
+        List<Item> itens = scraperService.execute();
 
         return itens;
     }
@@ -34,9 +38,15 @@ public class TestController {
     @GET
     @Path("/database")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemEntity> findAll() {
+    public List<Item> findAll() {
         return itemService.findAll();
     }
 
+    @GET
+    @Path("/trigger")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Result trigger() {
+        return compareService.execute();
+    }
 
 }
