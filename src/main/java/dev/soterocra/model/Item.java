@@ -7,14 +7,16 @@ public class Item {
     private String link;
     private String name;
     private String price;
+    private RegionEnum region;
 
     public Item() {
     }
 
-    public Item(String link, String name, String price) {
+    public Item(String link, String name, String price, RegionEnum region) {
         this.link = link;
         this.name = name;
         this.price = price;
+        this.region = region;
     }
 
     public String getLink() {
@@ -41,17 +43,25 @@ public class Item {
         this.price = price;
     }
 
+    public RegionEnum getRegion() {
+        return region;
+    }
+
+    public void setRegion(RegionEnum region) {
+        this.region = region;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return getLink().equals(item.getLink()) && getName().equals(item.getName()) && getPrice().equals(item.getPrice());
+        return getLink().equals(item.getLink()) && getName().equals(item.getName()) && getPrice().equals(item.getPrice()) && getRegion() == item.getRegion();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getLink(), getName(), getPrice());
+        return Objects.hash(getLink(), getName(), getPrice(), getRegion());
     }
 
     @Override
@@ -60,6 +70,7 @@ public class Item {
                 "link='" + link + '\'' +
                 ", name='" + name + '\'' +
                 ", price='" + price + '\'' +
+                ", region=" + region +
                 '}';
     }
 }

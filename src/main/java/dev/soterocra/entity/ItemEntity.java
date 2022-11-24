@@ -1,6 +1,7 @@
 package dev.soterocra.entity;
 
 
+import dev.soterocra.model.RegionEnum;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
@@ -18,14 +19,16 @@ public class ItemEntity implements Serializable {
     private String link;
     private String name;
     private String price;
+    private String region;
 
     public ItemEntity() {
     }
 
-    public ItemEntity(String link, String name, String price) {
+    public ItemEntity(String link, String name, String price, String region) {
         this.link = link;
         this.name = name;
         this.price = price;
+        this.region = region;
     }
 
     @DynamoDbPartitionKey
@@ -53,16 +56,11 @@ public class ItemEntity implements Serializable {
         this.price = price;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemEntity that = (ItemEntity) o;
-        return getLink().equals(that.getLink());
+    public String getRegion() {
+        return region;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getLink());
+    public void setRegion(String region) {
+        this.region = region;
     }
 }
