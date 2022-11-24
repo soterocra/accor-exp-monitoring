@@ -3,6 +3,8 @@ package dev.soterocra.service;
 import dev.soterocra.entity.ItemEntity;
 import dev.soterocra.model.Item;
 import dev.soterocra.model.RegionEnum;
+import dev.soterocra.service.observer.ItemObserver;
+import dev.soterocra.service.observer.ItemState;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -12,12 +14,13 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class ItemService {
+public class ItemService implements ItemObserver {
 
     private final DynamoDbTable<ItemEntity> itemTable;
 
-    public ItemService(DynamoDbEnhancedClient dynamo) {
+    public ItemService(DynamoDbEnhancedClient dynamo, ItemState itemState) {
         this.itemTable = dynamo.table(ItemEntity.TABLE_NAME, TableSchema.fromBean(ItemEntity.class));
+        itemState.addObserver(this);
     }
 
     public List<Item> findAll() {
@@ -26,4 +29,11 @@ public class ItemService {
                 .toList();
     }
 
+    public void newItem(Item item) {
+        itemTable.putItem(new ItemEntity(item.getLink(), item.getName(), item.getPrice(), item.getRegion().name()));
+    }
+
+    public void removedItem(Item item) {
+        itemTable.deleteItem(new ItemEntity(item.getLink(), item.getName(), item.getPrice(), item.getRegion().name()));
+    }
 }

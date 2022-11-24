@@ -5,6 +5,7 @@ import dev.soterocra.model.Result;
 import dev.soterocra.service.CompareService;
 import dev.soterocra.service.ItemService;
 import dev.soterocra.service.ScraperService;
+import dev.soterocra.usecase.UpdateTableUseCase;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -26,6 +27,9 @@ public class TestController {
     @Inject
     CompareService compareService;
 
+    @Inject
+    UpdateTableUseCase updateTableUseCase;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> execute() throws IOException {
@@ -46,7 +50,7 @@ public class TestController {
     @Path("/trigger")
     @Produces(MediaType.APPLICATION_JSON)
     public Result trigger() {
-        return compareService.execute();
+        return updateTableUseCase.refresh();
     }
 
 }

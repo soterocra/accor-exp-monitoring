@@ -6,7 +6,6 @@ public class Result {
 
     private List<Item> added;
     private List<Item> removed;
-
     private List<Item> sustained;
 
     public Result(List<Item> added, List<Item> removed, List<Item> sustained) {

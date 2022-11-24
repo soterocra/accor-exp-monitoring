@@ -1,25 +1,19 @@
 package dev.soterocra.service;
 
+import dev.soterocra.model.Item;
 import dev.soterocra.model.Result;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 
 @ApplicationScoped
 public class CompareService {
 
     private static final Logger LOG = Logger.getLogger(CompareService.class.getSimpleName());
 
-    @Inject
-    ItemService itemService;
-
-    @Inject
-    ScraperService scraperService;
-
-    public Result execute() {
-        var itensDatabase = itemService.findAll();
-        var itensOnline = scraperService.execute();
+    public Result execute(List<Item> itensDatabase, List<Item> itensOnline) {
 
         // Todos os itens do online que não existem no database foram adicionados.
         var addedItens = itensOnline.stream().filter(item -> !itensDatabase.contains(item)).toList();

@@ -29,9 +29,9 @@ public class ScraperService {
 
             try {
                 doc = Jsoup
-                        .connect("https://limitlessexperiences.accor.com/all-experiences?place_of_event=" + RegionEnum.BRAZIL.getPlaceForRegion())
+                        .connect("https://limitlessexperiences.accor.com/all-experiences" + regionEnum.getPlaceForRegion())
                         .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
-                        .header("cookie", RegionEnum.BRAZIL.getCookieForRegion())
+                        .header("cookie", regionEnum.getCookieForRegion())
                         .header("cache-control", "max-age=0")
                         .get();
             } catch (IOException e) {
@@ -49,7 +49,13 @@ public class ScraperService {
 
                 String link = element.getElementsByClass("product-item-link").get(0).attr("href");
                 String name = element.getElementsByClass("product-item-link").get(0).text();
-                String price = element.getElementsByClass("price").get(0).text();
+
+                String price = "LEILÃO";
+                try {
+                    price = element.getElementsByClass("price").get(0).text();
+                } catch (Exception e) {
+                    LOG.info("Produto em provavél Leilão, verifique: " + link);
+                }
 
                 var item = new Item(link, name, price, regionEnum);
 
