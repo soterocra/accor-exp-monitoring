@@ -1,5 +1,8 @@
 package dev.soterocra.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Item {
@@ -66,11 +69,11 @@ public class Item {
 
     @Override
     public String toString() {
-        return "Item{" +
-                "link='" + link + '\'' +
-                ", name='" + name + '\'' +
-                ", price='" + price + '\'' +
-                ", region=" + region +
-                '}';
+        return "{\"Item\":{"
+                + "\"link\":\"" + link + "\""
+                + ", \"name\":\"" + name + "\""
+                + ", \"price\":\"" + price + "\""
+                + ", \"region\":\"" + region + "\""
+                + "}}";
     }
 }

@@ -40,10 +40,10 @@ public class Result {
 
     @Override
     public String toString() {
-        return "Result{" +
-                "added=" + added +
-                ", removed=" + removed +
-                ", sustained=" + sustained +
-                '}';
+        return "{\"Result\":{"
+                + "\"added\":" + added
+                + ", \"removed\":" + removed
+                + ", \"sustained\":" + sustained
+                + "}}";
     }
 }
