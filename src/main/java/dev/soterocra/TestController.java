@@ -2,9 +2,11 @@ package dev.soterocra;
 
 import dev.soterocra.model.Item;
 import dev.soterocra.model.Result;
+import dev.soterocra.model.User;
 import dev.soterocra.service.CompareService;
 import dev.soterocra.service.ItemService;
 import dev.soterocra.service.ScraperService;
+import dev.soterocra.service.UserService;
 import dev.soterocra.usecase.UpdateTableUseCase;
 
 import javax.inject.Inject;
@@ -30,6 +32,9 @@ public class TestController {
     @Inject
     UpdateTableUseCase updateTableUseCase;
 
+    @Inject
+    UserService userService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> execute() throws IOException {
@@ -51,6 +56,13 @@ public class TestController {
     @Produces(MediaType.APPLICATION_JSON)
     public Result trigger() {
         return updateTableUseCase.refresh();
+    }
+
+    @GET
+    @Path("/trigger-user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<User> triggerUser() {
+        return userService.findAll();
     }
 
 }
