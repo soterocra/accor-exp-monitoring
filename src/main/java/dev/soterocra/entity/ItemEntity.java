@@ -1,13 +1,11 @@
 package dev.soterocra.entity;
 
 
-import dev.soterocra.model.RegionEnum;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
 @DynamoDbBean
 public class ItemEntity implements Serializable {
