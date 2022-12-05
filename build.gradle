@@ -11,6 +11,9 @@ repositories {
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-scheduler'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation 'io.quarkus:quarkus-rest-client-jackson'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson:2.14.0.Final'
     implementation 'software.amazon.awssdk:dynamodb-enhanced:2.18.16'
     implementation 'io.quarkus:quarkus-arc'

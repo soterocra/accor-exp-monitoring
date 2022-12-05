@@ -5,6 +5,7 @@ import dev.soterocra.model.Item;
 import dev.soterocra.model.RegionEnum;
 import dev.soterocra.service.observer.ItemObserver;
 import dev.soterocra.service.observer.ItemState;
+import io.quarkus.logging.Log;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -30,6 +31,7 @@ public class ItemService implements ItemObserver {
     }
 
     public void newItem(Item item) {
+        Log.info("Salvando item no banco.");
         itemTable.putItem(new ItemEntity(item.getLink(), item.getName(), item.getPrice(), item.getRegion().name()));
     }
 
