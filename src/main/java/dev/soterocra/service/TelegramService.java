@@ -1,5 +1,6 @@
 package dev.soterocra.service;
 
+import dev.soterocra.controller.dto.TelegramMessageDTO;
 import dev.soterocra.http.SendMessageObject;
 import dev.soterocra.http.TelegramClient;
 import dev.soterocra.model.Item;
@@ -8,6 +9,7 @@ import dev.soterocra.service.observer.ItemState;
 import io.quarkus.arc.Unremovable;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -29,8 +31,19 @@ public class TelegramService implements ItemObserver {
     @Inject
     UserService userService;
 
+    @Inject
+    ItemService itemService;
+
     void startup(@Observes StartupEvent event, ItemState itemState) {
         itemState.addObserver(this);
+    }
+
+    @ConsumeEvent(value = "telegram-received-message", blocking = true)
+    public void sendCurrentItens(TelegramMessageDTO dto) {
+        itemService.findAll().forEach(item -> {
+            var text = "<b>Resultado da Busca</b> \uD83D\uDD0D \uD83D\uDD0D \uD83D\uDD0D \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
+            client.sendMessage(botToken, new SendMessageObject(dto.getMessage().getChat().getId(), text));
+        });
     }
 
     @Override
