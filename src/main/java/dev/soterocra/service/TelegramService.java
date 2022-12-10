@@ -3,6 +3,7 @@ package dev.soterocra.service;
 import dev.soterocra.controller.dto.TelegramMessageDTO;
 import dev.soterocra.http.SendMessageObject;
 import dev.soterocra.http.TelegramClient;
+import dev.soterocra.model.Command;
 import dev.soterocra.model.Item;
 import dev.soterocra.service.observer.ItemObserver;
 import dev.soterocra.service.observer.ItemState;
@@ -16,6 +17,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Unremovable
 @ApplicationScoped
@@ -38,11 +41,19 @@ public class TelegramService implements ItemObserver {
         itemState.addObserver(this);
     }
 
+    public void sendMessage(Long chatId, String text) {
+        client.sendMessage(botToken, new SendMessageObject(chatId, text));
+    }
+
     @ConsumeEvent(value = "telegram-received-message", blocking = true)
+    public void sendMessage(Command command) {
+        command.getReplies().forEach(reply -> client.sendMessage(botToken, new SendMessageObject(command.getUser(), reply)));
+    }
+
     public void sendCurrentItens(TelegramMessageDTO dto) {
         itemService.findAll().forEach(item -> {
             var text = "<b>Resultado da Busca</b> \uD83D\uDD0D \uD83D\uDD0D \uD83D\uDD0D \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
-            client.sendMessage(botToken, new SendMessageObject(dto.getMessage().getChat().getId(), text));
+            this. sendMessage(dto.getMessage().getChat().getId(), text);
         });
     }
 
@@ -55,7 +66,7 @@ public class TelegramService implements ItemObserver {
                     Log.info("Enviando mensagem de adição para usuário: " + user);
 //                    var text = "<b>Resultado da Busca</b> \uD83D\uDD0D \uD83D\uDD0D \uD83D\uDD0D \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
                     var text = "<b>Adição</b> ✅ ✅ ✅ \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
-                    client.sendMessage(botToken, new SendMessageObject(user.getChatId(), text));
+                    this.sendMessage(user.getChatId(), text);
                 });
     }
 
@@ -67,8 +78,8 @@ public class TelegramService implements ItemObserver {
                 .forEach(user -> {
                     Log.info("Enviando mensagem de remoção para usuário: " + user);
 //                    var text = "<b>Resultado da Busca</b> \uD83D\uDD0D \uD83D\uDD0D \uD83D\uDD0D \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
-                    var text = "<b>Adição</b> ❌ ❌ ❌ \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
-                    client.sendMessage(botToken, new SendMessageObject(user.getChatId(), text));
+                    var text = "<b>Remoção</b> ❌ ❌ ❌ \n\n<b>Nome do Evento:</b> " + item.getName() + "\n\n<b>Pontos Necessários:</b> \uD83D\uDCB0 " + item.getPrice() + "\n\n<b>Link:</b> \uD83C\uDF10 " + item.getLink() + "\n";
+                    this.sendMessage(user.getChatId(), text);
                 });
     }
 }

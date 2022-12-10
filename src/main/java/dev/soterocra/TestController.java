@@ -2,6 +2,7 @@ package dev.soterocra;
 
 import dev.soterocra.controller.dto.TelegramMessageDTO;
 import dev.soterocra.model.Item;
+import dev.soterocra.model.Command;
 import dev.soterocra.model.Result;
 import dev.soterocra.model.User;
 import dev.soterocra.service.CompareService;
@@ -9,9 +10,9 @@ import dev.soterocra.service.ItemService;
 import dev.soterocra.service.ScraperService;
 import dev.soterocra.service.UserService;
 import dev.soterocra.usecase.UpdateTableUseCase;
+import dev.soterocra.usecase.telegram.intentions.StrategyFactory;
+import dev.soterocra.usecase.telegram.intentions.TelegramIntentionStrategy;
 import io.quarkus.logging.Log;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.eventbus.EventBus;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -41,7 +42,7 @@ public class TestController {
     UserService userService;
 
     @Inject
-    EventBus bus;
+    StrategyFactory strategyFactory;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -78,7 +79,10 @@ public class TestController {
     @Produces(MediaType.APPLICATION_JSON)
     public void telegramWebhook(TelegramMessageDTO telegramMessageDTO) {
         Log.info(telegramMessageDTO);
-        bus.request("telegram-received-message", telegramMessageDTO);
+
+        Command command = new Command(telegramMessageDTO.getMessage().getChat().getId(), telegramMessageDTO.getMessage().getText());
+
+        strategyFactory.getStrategy(command).apply(command);
     }
 
 }
