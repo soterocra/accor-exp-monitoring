@@ -1,15 +1,13 @@
 package dev.soterocra.usecase.telegram.intentions;
 
-import dev.soterocra.controller.dto.TelegramMessageDTO;
 import dev.soterocra.model.Command;
 import io.vertx.core.eventbus.EventBus;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Arrays;
 
 @ApplicationScoped
-public class DonateUseCase implements TelegramIntentionStrategy {
+public class DonateStrategy implements TelegramIntentionStrategy {
 
     @Inject
     EventBus bus;

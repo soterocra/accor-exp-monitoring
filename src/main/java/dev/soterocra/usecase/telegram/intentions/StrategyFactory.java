@@ -2,7 +2,6 @@ package dev.soterocra.usecase.telegram.intentions;
 
 import dev.soterocra.model.Command;
 import io.quarkus.arc.All;
-import io.quarkus.arc.InstanceHandle;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,8 +9,6 @@ import java.util.List;
 
 @ApplicationScoped
 public class StrategyFactory {
-
-//    void startup(@Observes StartupEvent eventbus) {}
 
     @All
     @Inject
@@ -25,6 +22,18 @@ public class StrategyFactory {
     }
 
     public TelegramIntentionStrategy getStrategy(Command command) {
+//        TelegramIntentionStrategy strategy = null;
+//
+//        for (int i = 0; i < getStrategies().size(); i++) {
+//            if (getStrategies().get(i).getCommand().equals(command.getCommand()))
+//                strategy = getStrategies().get(i);
+//            else
+//                strategy = defaultStrategy;
+//        }
+//
+//        return strategy;
+
+
         return getStrategies().stream().filter(s -> s.getCommand().equals(command.getCommand())).findFirst().orElse(defaultStrategy);
     }
 
