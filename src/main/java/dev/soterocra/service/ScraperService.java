@@ -10,16 +10,18 @@ import org.jsoup.select.Elements;
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class ScraperService {
 
     private static final Logger LOG = Logger.getLogger(ScraperService.class.getSimpleName());
 
-    List<Item> itens = new ArrayList<>();
+    public Set<Item> execute() {
+        Set<Item> itens = new HashSet<>();
 
-    public List<Item> execute() {
         LOG.info("Iniciando busca.");
 
         Document doc = null;

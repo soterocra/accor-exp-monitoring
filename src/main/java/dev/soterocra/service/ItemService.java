@@ -13,6 +13,8 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ItemService implements ItemObserver {
@@ -24,10 +26,10 @@ public class ItemService implements ItemObserver {
         itemState.addObserver(this);
     }
 
-    public List<Item> findAll() {
+    public Set<Item> findAll() {
         return itemTable.scan().items().stream()
                 .map(itemEntity -> new Item(itemEntity.getLink(), itemEntity.getName(), itemEntity.getPrice(), RegionEnum.valueOf(Optional.ofNullable(itemEntity.getRegion()).orElse("BRAZIL"))))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     public void newItem(Item item) {

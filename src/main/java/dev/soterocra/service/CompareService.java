@@ -7,13 +7,14 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class CompareService {
 
     private static final Logger LOG = Logger.getLogger(CompareService.class.getSimpleName());
 
-    public Result execute(List<Item> itensDatabase, List<Item> itensOnline) {
+    public Result execute(Set<Item> itensDatabase, Set<Item> itensOnline) {
 
         // Todos os itens do online que não existem no database foram adicionados.
         var addedItens = itensOnline.stream().filter(item -> !itensDatabase.contains(item)).toList();

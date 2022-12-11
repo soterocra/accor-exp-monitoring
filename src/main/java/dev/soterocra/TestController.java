@@ -22,6 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Path("/accor-exp")
 public class TestController {
@@ -46,9 +47,9 @@ public class TestController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Item> execute() throws IOException {
+    public Set<Item> execute() throws IOException {
 
-        List<Item> itens = scraperService.execute();
+        Set<Item> itens = scraperService.execute();
 
         return itens;
     }
@@ -56,7 +57,7 @@ public class TestController {
     @GET
     @Path("/database")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Item> findAll() {
+    public Set<Item> findAll() {
         return itemService.findAll();
     }
 
